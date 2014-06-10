@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ -f Makefile ]; then
+    make clean
+fi
+
+rm -fr                                                     		     \
+		Makefile                                                     \
+		CMakeCache.txt                                               \
+		CMakeFiles                                                   \
+		CTestTestfile.cmake                                          \
+		Testing                                                      \
+		cmake_install.cmake                                          \
+		install_manifest.txt                                         \
+		md5sum.cmake                                                 \
+		build                                                        \
