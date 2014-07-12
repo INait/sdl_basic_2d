@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<resources>
+	<set path="../res/images/" />
+	<atlas>
+		<image name="hello" file="hello.bmp"/>
+		<image name="empty" file="empty.bmp"/>
+		<image name="zero" file="zero.bmp"/>
+		<image name="cross" file="cross.bmp"/>
+		<text name="cant_go_text" value="You can't go there" size="16" />
+		<text name="found_treasure_text" value="You found treasure" size="16" />
+	</atlas>
+	
+	<font name="sans_pro" file="../res/fonts/SourceSansPro-Regular.ttf" />
+</resources>

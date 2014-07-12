@@ -1,6 +1,7 @@
 #include <memory>
 #include <map>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #ifndef _WINDOW_MANAGER_HPP_
 #define _WINDOW_MANAGER_HPP_
@@ -12,7 +13,9 @@ public:
 
 	int Init();
 
-	int LoadTextures();
+	void LoadXMLResources();
+	
+	SDL_Texture* LoadImage(std::string file);
 
 	void ScreenLoop();
 

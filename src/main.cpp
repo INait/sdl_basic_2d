@@ -1,10 +1,12 @@
 #include "window_manager.hpp"
 #include "player.hpp"
 
+#undef main
+
 int main()
 {
 	auto wm = std::make_shared<WindowManager>();
-	wm->LoadTextures();
+	wm->LoadXMLResources();
 	wm->ScreenLoop();
 
 	/*

@@ -2,6 +2,8 @@
 #include "window_manager.hpp"
 #include "cross_zero.hpp"
 
+#include "../3rd/tinyxml/tinyxml.h"
+
 WindowManager::WindowManager()
 {
 	Init();
@@ -39,32 +41,76 @@ int WindowManager::Init()
 	return 0;
 }
 
-int WindowManager::LoadTextures()
+void WindowManager::LoadXMLResources()
 {
-	std::string texture_files[3] = {
-		"/home/ilya/test_dev/x_proj/res/empty.bmp",
-		"/home/ilya/test_dev/x_proj/res/zero.bmp",
-		"/home/ilya/test_dev/x_proj/res/cross.bmp"
-	};
-
-	SDL_Surface* bmp;
-	for( int i = -1; i < 2; ++i )
+	TiXmlDocument doc("../res/res.xml");
+	if (!doc.LoadFile())
 	{
-		bmp = SDL_LoadBMP(texture_files[ i + 1 ].c_str());
-		if (bmp == nullptr){
-			std::cout << "SDL_LoadBMP Error: " << SDL_GetError() << std::endl;
-			return 1;
-		}
+		std::cout << "xml wasn't loaded" << std::endl;
+		return;
+	}
+	TiXmlNode* pResElem;
 
-		textures.insert( std::make_pair( i, SDL_CreateTextureFromSurface(ren, bmp) ) );
-		SDL_FreeSurface(bmp);
-		if (textures[ i ] == nullptr){
-			std::cout << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
-			return 1;
+	pResElem = doc.FirstChild("resources");
+	if (!pResElem)
+	{
+		std::cout << "wrong XML format: no 'resources' node" << std::endl;
+		return;
+	}
+
+	// check if set param exists
+	TiXmlElement* pSetElem = pResElem->FirstChildElement("set");
+	std::string resPrefix = (pSetElem && pSetElem->Attribute("path")) ? pSetElem->Attribute("path") : "";
+
+	/*
+	for (TiXmlElement* pFontElem = pResElem->FirstChildElement("font"); pFontElem; pFontElem = pFontElem->NextSiblingElement("font"))
+	{
+		std::string name = pFontElem->Attribute("name");
+		std::string file = pFontElem->Attribute("file");
+
+		fonts.insert(std::make_pair(name, file));
+	}
+	*/
+
+	TiXmlElement* pAtlasElem = pResElem->FirstChildElement("atlas");
+	if (pAtlasElem)
+	{
+		try {
+			int i = -2;
+			for (TiXmlElement* pTextureElem = pAtlasElem->FirstChildElement("image"); pTextureElem; pTextureElem = pTextureElem->NextSiblingElement("image"))
+			{
+				std::string name = pTextureElem->Attribute("name");
+				std::string file = resPrefix + pTextureElem->Attribute("file");
+				SDL_Texture* texture = LoadImage(file);
+
+				textures.insert(std::make_pair(i, texture));
+				i++;
+			}
+		}
+		catch (const std::runtime_error &e)
+		{
+			std::cout << e.what() << std::endl;
+			return;
 		}
 	}
 
-	return 0;
+	SDL_Surface* icon = IMG_Load("../res/icon.ico");
+	if (!icon)
+	{
+		std::cout << "Error loading window icon" << std::endl;
+	}
+	SDL_SetWindowIcon(win, icon);
+}
+
+SDL_Texture* WindowManager::LoadImage(std::string file)
+{
+	SDL_Surface* surf = nullptr;
+	surf = IMG_Load(file.c_str());
+	if (surf == nullptr)
+		throw std::runtime_error("Failed to load image: " + file + IMG_GetError());
+
+	SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, surf);
+	return tex;
 }
 
 void WindowManager::ScreenLoop()
