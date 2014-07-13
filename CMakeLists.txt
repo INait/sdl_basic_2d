@@ -31,5 +31,6 @@ FILE( REMOVE         ${CMAKE_BINARY_DIR}/build )
 FILE( MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/build )
 
 FILE(GLOB PROJ_SRC src/*.cpp)
-ADD_EXECUTABLE( build/x_proj ${PROJ_SRC} )
-TARGET_LINK_LIBRARIES( build/x_proj SDL )
+FILE(GLOB 3RD_SRC 3rd/tinyxml/*.cpp)
+ADD_EXECUTABLE( build/x_proj ${PROJ_SRC} ${3RD_SRC} )
+TARGET_LINK_LIBRARIES( build/x_proj SDL SDL_image)
